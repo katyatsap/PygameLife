@@ -11,8 +11,8 @@ def render_field(field):
         print()
     print('----------------------')
 
-def render_pygame(field, scr):
-    scale = 15
+def render_pygame(field, scr, scale):
+    #scale = 15
     for y in range(0, len(field)):
         for x in range(0, len(field[0])):
             if field[y][x] == 0:
@@ -24,11 +24,21 @@ def render_pygame(field, scr):
 
 
 def main():
-    gof = GameOfLife(30, 30)
-    gof.initialize(30)
+    width = int(input('Введите ширину поля: '))
+    height = int(input('Введите высоту поля: '))
+    life_count = int(input('Введите изначальное количество живых клеток: '))
+    if life_count >= width*height - ((width-1)*2+height*2):
+        print('Слишком много живых клеток')
+        life_count = int(input('Введите изначальное количество живых клеток: '))
+    scl = int(input('Введите масштаб отрисовки: '))
+    if width*scl >=640 or height*scl >=640:
+        print('Поле не поместится на экране. Выберите меньший масштаб')
+        scl = int(input('Введите масштаб отрисовки: '))
 
+    gof = GameOfLife(width, height)
+    gof.initialize(life_count)
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((width*scl, height*scl))
     pygame.display.set_caption("Game of Life")
     clock = pygame.time.Clock()
     is_running = True
@@ -39,7 +49,7 @@ def main():
                 is_running = False
         gof.run_transition_rule()
         screen.fill((0, 0, 0))
-        render_pygame(gof.field, screen)
+        render_pygame(gof.field, screen, scl)
         pygame.display.flip()
         # держим цикл на правильной скорости
         clock.tick(60)
